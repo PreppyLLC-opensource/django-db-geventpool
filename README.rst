@@ -1,24 +1,35 @@
 django-db-geventpool
 ====================
 
-.. image:: https://travis-ci.org/jneight/django-db-geventpool.png?branch=master  
+.. image:: http://img.shields.io/travis/jneight/django-db-geventpool.svg
    :target: https://travis-ci.org/jneight/django-db-geventpool
+   :alt: travis
 
+.. image:: https://img.shields.io/pypi/v/django-db-geventpool.svg
+   :target: https://pypi.python.org/pypi/django-db-geventpool
+   :alt: pypi version
+
+.. image:: http://img.shields.io/pypi/l/django-db-geventpool.svg
+   :target: https://pypi.python.org/pypi/django-db-geventpool
+   :alt: pypi license
 
 Another DB pool using gevent for PostgreSQL DB.
 
 *Need Django 1.5.x or newer (check settings for django >= 1.6)*
+
+Python 3 is supported, but if `gevent` is not installed successfully it will use `eventlet`.
 
 
 Patch psycopg2
 --------------
 
 Before using the pool, psycopg2 must be patched with psycogreen, if you are using `gunicorn webserver <http://www.gunicorn.org/>`_,
-a good place is the `post_fork()` function at the config file
+a good place is the `post_fork() <http://docs.gunicorn.org/en/latest/settings.html#post-fork>`_ function at the config file:
 
 .. code:: python
 
-   from psycogreen.gevent import patch_psycopg
+   from psycogreen.gevent import patch_psycopg     # use this if you use gevent workers
+   from psycogreen.eventlet import patch_psycopg   # use this if you use eventlet workers
 
    def post_fork(server, worker):
        patch_psycopg()
@@ -62,7 +73,6 @@ Settings
             'HOST': '',
             'PORT': '',
             'ATOMIC_REQUESTS': False,
-            'AUTOCOMMIT': True,
             'CONN_MAX_AGE': 0,
             'OPTIONS': {
                 'MAX_CONNS': 20
